@@ -26,15 +26,33 @@ namespace adt
         public Node parent = null;
     }
 
-    // final class
-     class Node : NodeBinarySearchTree 
-     {
-         public Node() {}
+    class NodeAvlTree: NodeBinarySearchTree
+    {
+        public int key = 0;
+        public int height = 0;
+    }
+    
+    class Node : NodeAvlTree 
+    {
+        public Node() {}
 
-         public Node(object _data) { data = _data; }
+        // lists, stack, queue, dequeue
+        public Node(object _data) { data = _data; }
 
-         public Node(int _val) { val = _val; }
-     }
+        // bst
+        public Node(int _val) 
+        {
+            val = _val; 
+        }
+
+        // avl tree
+        public Node(int _key, object _data) 
+        {
+            key = _key;
+            data = _data;
+        }
+
+    }
 
 // public Node   next = null;
 // public object data = null;
