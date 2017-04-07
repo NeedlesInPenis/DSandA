@@ -1,3 +1,7 @@
+/* 
+7th April 2017 
+Basic implementation of linked list
+*/
 using System;
 
 namespace adt 
