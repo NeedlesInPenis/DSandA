@@ -10,25 +10,31 @@ namespace adt
 
     interface ILinkedList
     {
+        /* NOTES:
+            [O(n - 1) + O(1)] means:
+            it take O(n - 1) to search the data and O(1) to perform the operation.
+            In many case O(n-1) is eliminated and data processing is done in constant time.
+         */
+
         int getLength();
-        bool isEmpty();
+        bool isEmpty(); 
 
-        void Add(object data);    // append
-        void AddTop(object data); // prepend
-        void Add(int index, object data); 
+        void Add(object data);    // append. O(1)
+        void AddTop(object data); // prepend. O(1) 
+        void Add(int index, object data); // insert add arbitary position. [O(n - 1) + O(1)]
 
-        void RemoveTop();
-        void RemoveRear();
-        void Remove(int index);
+        void RemoveTop();  // O(1)
+        void RemoveRear(); // 0(n-1) + O(1)
+        void Remove(int index); // remove from arbitary position. 0(n-1) + O(1)
         
-        void Update(object oldData, object newData);
-        void Update(int index, object newData);
+        void Update(object oldData, object newData); // replace data. O(n)
+        void Update(int index, object newData);      // replace data at index. O(n)
 
-        int getIndex(object data);
-        object getData(int index);
+        int getIndex(object data); // get index of a data, -1 if not found. O(n)
+        object getData(int index); // get data at index, null if bad index. O(n) [O(1) for head and tail]
 
-        object this[int index] { get; set; }
-        void print();
+        object this[int index] { get; set; } // overloading [] operator 
+        void print(); // dumping the list
 
     }
 
@@ -84,7 +90,7 @@ namespace adt
 
         public void Add(int index, object data)
         {
-            // if empty create new lust
+            // if empty create new list
             if(isEmpty())
             {
                 Add(data);
@@ -118,7 +124,7 @@ namespace adt
             int i = 0;
             Node curr = head;
 
-            while (i < index - 1)
+            while (i < index - 1) // index - 1 is important
             {
                 curr = curr.next;
                 i++;
@@ -189,7 +195,7 @@ namespace adt
                 return;
             }
 
-            if(index == getLength() - 1)
+            if(index == getLength() - 1) // getLength() - 1 is impotant
             {
                 RemoveRear();
                 return;
@@ -197,7 +203,7 @@ namespace adt
 
             int i = 0;
             Node curr = head;
-            while( i < index - 1)
+            while( i < index - 1) // index - 1 is important
             {
                 curr = curr.next;
                 i++;
@@ -209,6 +215,7 @@ namespace adt
             listLength--;
         }
 
+        // replacing data
         public void Update(object oldData, object newData)
         {
             int index = getIndex(oldData);
@@ -221,6 +228,7 @@ namespace adt
             Console.WriteLine("[ERROR] Update(object,object): {0} not found", oldData);
         }
 
+        // replacing data with index
         public void Update(int index, object newData)
         {
             if(isEmpty())
@@ -237,6 +245,7 @@ namespace adt
 
             Node curr = head;
             int i = 0;
+
             while(i != index)
             {
                 curr = curr.next;
@@ -282,6 +291,10 @@ namespace adt
                 return null;
             }
 
+            if(index == 0) return head.data;
+
+            if(index == getLength() - 1) return tail.data;
+
             int i = 0;
             Node curr = head;
 
@@ -295,6 +308,7 @@ namespace adt
             
         }
 
+        // this look cool
         public object this[int index]
         {
             get { return getData(index); }
@@ -305,6 +319,7 @@ namespace adt
         public int getLength() { return listLength; }
         public bool isEmpty() { return getLength() <= 0 ? true: false; }
 
+        // dumping whole list
         public void print()
         {
             int index = 0;
