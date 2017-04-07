@@ -6,7 +6,8 @@ namespace adt
     {
         static void Main(string[] args)
         {
-
+            Console.WriteLine("Testing different data structures");
         }
     }
 }
+
