@@ -4,7 +4,7 @@ namespace adt
 {
     class Node
     {
-        public Node next = null;
+        public Node   next = null;
         public object data = null;
     }
 
@@ -21,14 +21,14 @@ namespace adt
 
         void Add(object data);    // append. O(1)
         void AddTop(object data); // prepend. O(1) 
-        void Add(int index, object data); // insert add arbitary position. [O(n - 1) + O(1)]
+        void Add(int index, object data); // insert at arbitary position. [O(n - 1) + O(1)]
 
         void RemoveTop();  // O(1)
         void RemoveRear(); // 0(n-1) + O(1)
         void Remove(int index); // remove from arbitary position. 0(n-1) + O(1)
         
-        void Update(object oldData, object newData); // replace data. O(n)
-        void Update(int index, object newData);      // replace data at index. O(n)
+        void Update(object oldData, object newData); // replace data. O(n) [O(1) for head and tail]
+        void Update(int index, object newData);      // replace data at index. O(n) [O(1) for head and tail]
 
         int getIndex(object data); // get index of a data, -1 if not found. O(n)
         object getData(int index); // get data at index, null if bad index. O(n) [O(1) for head and tail]
@@ -41,8 +41,8 @@ namespace adt
     class LinkedList: ILinkedList
     {
         // provide access to derived classes
-        protected Node head = null;
-        protected Node tail = null;
+        protected Node head      = null;
+        protected Node tail      = null;
         protected int listLength = 0;
 
         public void Add(object data)
@@ -52,18 +52,17 @@ namespace adt
             node.data = data;
             node.next = null;
 
-            //appending node 
             if(isEmpty())
             {   
-                
                 // create a new list
                 head = node;
                 tail = head;
             }
             else
             {
+                //appending node 
                 tail.next = node;
-                tail = node;
+                tail = node; // updating tail pointer
             }
 
             listLength++;
@@ -98,6 +97,7 @@ namespace adt
             }
 
             // error checking for index value
+            /* note: here index = getLength is allowed */
             if(index < 0 || index > getLength())
             {
                 Console.WriteLine("[ERROR] Add(int,object): {0} is an invalid index", index);
@@ -130,7 +130,7 @@ namespace adt
                 i++;
             }
 
-            // add after curr;
+            // insert after curr;
             node.next = curr.next;
             curr.next = node;
 
@@ -165,11 +165,11 @@ namespace adt
                 curr = curr.next;
             }
 
-            if(curr == head) head = null; //there was only one item, now list is empty
+            if(curr == head) head = null; //there WAS only one item, now list is empty
             else 
             {
                 curr.next = null;
-                tail = curr;
+                tail = curr; // update tail pointer
             }
 
             listLength--;
@@ -183,6 +183,7 @@ namespace adt
                 return;
             }
 
+            /* note: index should be less than getLength */
             if(index <  0 || index >= getLength())
             {
                 Console.WriteLine("[ERROR] Remove(int): {0} is an invalid index", index);
@@ -195,7 +196,7 @@ namespace adt
                 return;
             }
 
-            if(index == getLength() - 1) // getLength() - 1 is impotant
+            if(index == getLength() - 1) // getLength() - 1 is important
             {
                 RemoveRear();
                 return;
@@ -242,6 +243,19 @@ namespace adt
                 Console.WriteLine("[ERROR] getIndex(object): {0} is an invalid index", index);
                 return;
             }
+
+            if(index == 0) 
+            {
+                head.data = newData;
+                return;
+            }
+
+            if(index == getLength() - 1)
+            {
+                tail.data = newData;
+                return;
+            }
+            
 
             Node curr = head;
             int i = 0;
