@@ -21,10 +21,10 @@ Basic implementation of stack using linked list
          bool isEmpty();
          int getSize();
          
-         void push(object data);
-         object pop();
+         void push(object data); // O(1)
+         object pop();           // O(1)
 
-         void print();
+         void print();           // O(n)
      }
 
      class cStack: IcStack
@@ -35,6 +35,7 @@ Basic implementation of stack using linked list
          public int  getSize() { return size; }
          public bool isEmpty() { return getSize() <= 0 ? true : false; }
 
+         
          public void push(object data)
          {
              Node node = new Node();
