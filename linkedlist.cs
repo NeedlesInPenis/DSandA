@@ -10,6 +10,7 @@ namespace adt
     {
         public Node   next = null;
         public object data = null;
+        public Node   prev = null; // this will require for double linked list
     }
 
     interface ILinkedList
@@ -150,7 +151,16 @@ namespace adt
                 return;
             }
 
-            head = head.next;
+            if(getLength() == 1)
+            {
+                head = null;
+                tail = null;
+            }
+            else
+            {
+                head = head.next;
+            }
+
             listLength--;
         }
 
