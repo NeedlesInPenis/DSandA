@@ -10,7 +10,11 @@ namespace adt
     {
         public Node   next = null;
         public object data = null;
-        public Node   prev = null; // this will require for double linked list
+        public Node   prev = null; // need this for double linked list
+
+        // need them for Trees
+        public Node right = null;
+        public Node left  = null;
     }
 
     interface ILinkedList
