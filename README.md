@@ -6,7 +6,7 @@ linked list - done
 stack       - done  
 queue       - done  
 deque       - done  
-doubly linked list - TODO  
+doubly linked list - done  
 Binary search tree - TODO  
 AVL tree           - TODO  
 ...  
