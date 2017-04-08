@@ -27,7 +27,14 @@ namespace adt
     }
 
     // final class
-     class Node : NodeBinarySearchTree {}
+     class Node : NodeBinarySearchTree 
+     {
+         public Node() {}
+
+         public Node(object _data) { data = _data; }
+
+         public Node(int _val) { val = _val; }
+     }
 
 // public Node   next = null;
 // public object data = null;
