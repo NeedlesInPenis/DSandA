@@ -7,16 +7,6 @@ using System;
 namespace adt
 {
 
-    /*
-     // "ERROR: namespace `adt` already contains definition for Node."
-     class Node 
-     {
-         public Node   next = null;
-         public object data = null;
-     }
-    */
-  
-
      interface IDoubleLL
      {
          /*

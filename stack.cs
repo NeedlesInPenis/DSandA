@@ -7,14 +7,7 @@ Basic implementation of stack using linked list
  
  namespace adt
  {
-     /*
-     // "ERROR: namespace `adt` already contains definition for Node."
-     class Node 
-     {
-         public Node   next = null;
-         public object data = null;
-     }
-     */
+     
 
      interface IcStack
      {
