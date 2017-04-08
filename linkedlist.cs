@@ -15,6 +15,7 @@ namespace adt
         // need them for Trees
         public Node right = null;
         public Node left  = null;
+        public int  val   = 0;
     }
 
     interface ILinkedList
