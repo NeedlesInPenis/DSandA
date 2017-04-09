@@ -36,6 +36,8 @@ namespace adt
         protected Node root = null;
 
         protected Node getRoot() { return root; }
+
+        public bool useIterative = false;
     }
     class recursiveFunctions : baseForBst
     {
@@ -56,11 +58,15 @@ namespace adt
                 temp.parent = node;
             }
                 
-            else
+            else if( val > node.val)
             {
                 temp  = insertR(node.right, val);
                 node.right = temp;
                 temp.parent = node;
+            }
+            else
+            {
+                Console.WriteLine("[ERROR] insertR(Node,int): {0} already exists", val);
             }
 
             return node;
@@ -137,6 +143,25 @@ namespace adt
 
         }
 
+        protected Node getMinR(Node node)
+        {
+            if(node == null) return null;
+
+            if(node.left == null) return node;
+
+            return getMinR(node.left);
+
+        }
+
+        protected Node getMaxR(Node node)
+        {
+            if(node == null) return null;
+
+            if(node.right == null) return node;
+
+            return getMaxR(node.right);
+        }
+
     }
 
     class iterativeFunctions: recursiveFunctions
@@ -170,7 +195,7 @@ namespace adt
                         return;
                     }
                 }
-                else
+                else if(val > parent.val)
                 {
                     // going right
                     curr = curr.right;
@@ -181,6 +206,11 @@ namespace adt
                         node.parent = parent;
                         return;
                     }
+                }
+                else
+                {
+                    Console.WriteLine("[ERROR] insertI(int): {0} already exists", val);
+                    return;
                 }
 
             } //while() END
@@ -263,6 +293,33 @@ namespace adt
 
             return null;
         }
+
+         protected Node getMinI(Node node)
+        {
+            if(node == null) return null;
+            Node curr = node;
+
+            while(curr.left != null)
+            {
+                curr = curr.left;
+            }
+
+            return curr;
+        }
+
+        protected Node getMaxI(Node node)
+        {
+            if(node == null) return null;
+
+            Node curr = node;
+
+            while(curr.right != null)
+            {
+                curr = curr.right;
+            }
+
+            return curr;
+        }
         
     }
     class BinarySearchTree : iterativeFunctions, IBinarySearchTree
@@ -270,17 +327,8 @@ namespace adt
 
         public void insert(int val)
         {
-            if(valExists(val))
-            {
-                Console.WriteLine("[ERROR] insert(int): {0} already exists", val);
-                return;
-            }
-
-            // recursive version
-            //root = insertR(getRoot(), val);
-
-            // iterative version
-            insertI(val);
+            if(!useIterative) root = insertR(getRoot(), val); // recursive version
+            else insertI(val); // iterative
         }
 
 
@@ -338,42 +386,72 @@ namespace adt
     // valExists -------
         public bool valExists(int val)
         {
-            // iterative version
-            return valExistsI(val);
-            
-
-            // recursive version
-            // return valExistsR(getRoot(), val);
+            if(!useIterative) return valExistsR(getRoot(), val);  // recursive version
+            else return valExistsI(val); // iterative version
         }
 
 #endregion
 
         private Node getParent(Node node)
         {
-            // iterative 
-            // return getParentI(node);
-
-            // recursive
-            return getParentR(getRoot(), node);
+            if(!useIterative) return getParentR(getRoot(), node);   // recursive
+            else return getParentI(node); // iterative 
         }
 
-        public void testGetParent()
+        public int getMin()
         {
-            Console.WriteLine("=== test getParent() ===");
-            testGetParent(getRoot());
-            Console.WriteLine();
+            Node temp = getMin(getRoot());
+            return temp != null ? temp.val : -1;
         }
 
-        private void testGetParent(Node node)
+        public int getMax()
         {
-            if(node == null) return;
-            testGetParent(node.left);
-            if( node.parent != null)
-                Console.Write("{0}->[{1}] ", node.val, node.parent.val);
+            Node temp = getMax(getRoot());
+            return temp != null ? temp.val : -1;
+        }
+
+        private Node getMin(Node node)
+        {
+            if(!useIterative) return getMinR(node); // recursive
+            else return getMinI(node); // iterative
+        }
+        private Node getMax(Node node)
+        {
+            if(!useIterative) return getMaxR(node); // recursive
+            else return getMaxI(node); // iterative
+        }
+
+        
+        public void delete(int val)
+        {
+
+        }
+
+        protected void deleteI(int val)
+        {
+
+        }
+
+        protected Node deleteR(Node node, int val)
+        {
+            if(node == null) return null;
+            /*
+                Case 1: leaf node
+                Case 2: Have node in left
+                Case 3: Have node in right
+                Case 4: Have both children
+             */
+
+            if( val < node.val ) node.left = deleteR(node.left, val);
+            else if(val > node.val) node.right = deleteR(node.right, val);
             else
-                Console.Write("{0}->[null] ", node.val);
-            testGetParent(node.right);
+            {
 
+            }
+            
+            return null;
+             
         }
+
     }   
 }
