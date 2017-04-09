@@ -15,7 +15,6 @@ namespace adt
     {
         /* features
         deletion
-        getParent
         isBst
         height
         successor
@@ -49,8 +48,20 @@ namespace adt
                 return node;
             }
 
-            if(val < node.val) node.left = insertR(node.left, val);
-            else node.right = insertR(node.right, val);
+            Node temp = null;
+            if(val < node.val) 
+            {
+                temp = insertR(node.left, val);
+                node.left = temp;
+                temp.parent = node;
+            }
+                
+            else
+            {
+                temp  = insertR(node.right, val);
+                node.right = temp;
+                temp.parent = node;
+            }
 
             return node;
         }
@@ -112,6 +123,20 @@ namespace adt
             return temp;
         }
 
+        protected Node getParentR(Node curr, Node node)
+        {
+            if(curr == null || node == null) return null;
+
+            if(node.val == getRoot().val) return null;
+
+            if( (curr.left  != null && curr.left.val  == node.val) ||
+                (curr.right != null && curr.right.val == node.val) ) return curr;
+
+            if(node.val < curr.val) return getParentR(curr.left, node);
+            else return getParentR(curr.right, node);
+
+        }
+
     }
 
     class iterativeFunctions: recursiveFunctions
@@ -141,6 +166,7 @@ namespace adt
                     if(curr == null)
                     {
                         parent.left = node;
+                        node.parent = parent;
                         return;
                     }
                 }
@@ -152,6 +178,7 @@ namespace adt
                     if(curr == null)
                     {
                         parent.right = node;
+                        node.parent = parent;
                         return;
                     }
                 }
@@ -194,7 +221,7 @@ namespace adt
             return curr;
         }
 
-        private bool valExistsI(int val)
+        protected bool valExistsI(int val)
         {
             if(getRoot() == null) return false;            
             
@@ -323,12 +350,30 @@ namespace adt
 
         private Node getParent(Node node)
         {
-            return getParentI(node);
+            // iterative 
+            // return getParentI(node);
+
+            // recursive
+            return getParentR(getRoot(), node);
         }
 
-        protected Node getParentR(Node node)
+        public void testGetParent()
         {
-            return null;
+            Console.WriteLine("=== test getParent() ===");
+            testGetParent(getRoot());
+            Console.WriteLine();
+        }
+
+        private void testGetParent(Node node)
+        {
+            if(node == null) return;
+            testGetParent(node.left);
+            if( node.parent != null)
+                Console.Write("{0}->[{1}] ", node.val, node.parent.val);
+            else
+                Console.Write("{0}->[null] ", node.val);
+            testGetParent(node.right);
+
         }
     }   
 }
