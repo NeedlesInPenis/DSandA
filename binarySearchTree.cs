@@ -37,6 +37,9 @@ namespace adt
 
         protected Node getRoot() { return root; }
 
+        protected virtual Node getMin(Node node) { return null; }
+        protected virtual Node getMax(Node node) { return null; }
+
         public bool useIterative = false;
     }
     class recursiveFunctions : baseForBst
@@ -70,6 +73,41 @@ namespace adt
             }
 
             return node;
+        }
+
+         protected Node deleteR(Node node, int val)
+        {
+            if(node == null) return null;
+            /*
+                Case 1: leaf node
+                Case 2: Have node in left
+                Case 3: Have node in right
+                Case 4: Have both children
+             */
+
+            // finding node to be deleted
+            if( val < node.val ) node.left = deleteR(node.left, val);
+            else if(val > node.val) node.right = deleteR(node.right, val);
+            else
+            {
+                // node found. deleting it
+
+                //case 1, 2 and 3 
+                if(node.left == null)
+                    return node.right;
+                
+                if(node.right == null)
+                    return node.left;
+                
+                // case 4
+                // replacing node value with the minimum value in right subtree
+                node.val = getMin(node.right).val;
+                // removing duplicate value from right subtree
+                node.right = deleteR(node.right, node.val);
+            }
+            
+            return node;
+             
         }
 
         protected void InOrderR(Node node)
@@ -410,12 +448,12 @@ namespace adt
             return temp != null ? temp.val : -1;
         }
 
-        private Node getMin(Node node)
+        protected override Node getMin(Node node)
         {
             if(!useIterative) return getMinR(node); // recursive
             else return getMinI(node); // iterative
         }
-        private Node getMax(Node node)
+        protected override Node getMax(Node node)
         {
             if(!useIterative) return getMaxR(node); // recursive
             else return getMaxI(node); // iterative
@@ -424,7 +462,7 @@ namespace adt
         
         public void delete(int val)
         {
-
+            if(!useIterative) root = deleteR(getRoot(), val);
         }
 
         protected void deleteI(int val)
@@ -432,26 +470,7 @@ namespace adt
 
         }
 
-        protected Node deleteR(Node node, int val)
-        {
-            if(node == null) return null;
-            /*
-                Case 1: leaf node
-                Case 2: Have node in left
-                Case 3: Have node in right
-                Case 4: Have both children
-             */
-
-            if( val < node.val ) node.left = deleteR(node.left, val);
-            else if(val > node.val) node.right = deleteR(node.right, val);
-            else
-            {
-
-            }
-            
-            return null;
-             
-        }
+       
 
     }   
 }
