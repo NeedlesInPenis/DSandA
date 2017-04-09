@@ -82,10 +82,10 @@ namespace adt
         {
             if(node == null) return null;
             /*
-                Case 1: leaf node
-                Case 2: Have node in left
-                Case 3: Have node in right
-                Case 4: Have both children
+                Case 1: Have no nodes in left and right
+                Case 2: Have node in left  but not in right
+                Case 3: Have node in right but not in left
+                Case 4: Have nodes in left and right
              */
 
             // finding node to be deleted
@@ -94,34 +94,102 @@ namespace adt
             else
             {
                 // node found. deleting it
-
-                /*
-                Notes: below code be little hard to understand
-                simple version of case 1, 2, 3 deletion:
-                case 1:
+                
+                // case 1: no children;
                 if(node.left == null && node.right == null)
+                {
                     node = null;
                     return node;
-                
-                case 2:
-                if(node.left != null && node.right == null)
-                    node = node.left;
-                    return node;
-                
-                case 3:
-                if(node.right != null && node.left == null)
-                    node = node.right;
-                    return node;
-                 */
+                }
 
-                //case 1, 2 and 3 
+                // case 2: only have left child
+                if(node.left != null && node.right == null)
+                {
+                    // if root node
+                    if(node.parent == null)
+                    {
+                        
+                        node = node.left;
+                        node.parent = null;
+                        return node;
+                    }
+
+                    /*
+                    node.left.parent = node.parent;
+                    
+                    if(node.parent.left == node) 
+                        node.parent.left = node.left;
+                    else 
+                        node.parent.right = node.left;
+
+                    return node.left
+
+                    simple version of this code is written below
+                     */
+
+                    Node parentOfNode = node.parent;
+                    Node leftChildOfNode = node.left;
+
+                    leftChildOfNode.parent = parentOfNode;
+
+                    // node is in left or right of its parent?
+                    if(parentOfNode.left == node)
+                        parentOfNode.left = leftChildOfNode;
+                    else
+                        parentOfNode.right = leftChildOfNode;
+
+                    return leftChildOfNode;
+
+                }
+
+                // case 3: only have right child
+                if(node.right != null && node.left == null)
+                {
+                    // if root node
+                    if(node.parent == null)
+                    {   
+                        node = node.right;
+                        node.parent = null;
+                        return node;
+                    }
+
+                    /*
+                    node.right.parent = node.parent
+
+                    if(node.parent.right == node) node.parent.right = node.right;
+                    else node.parent.left = node.left;
+
+                    return node.right;
+
+                    simple version of this code is written below
+                     */
+
+                    Node parentOfNode = node.parent;
+                    Node rightChildOfNode = node.right;
+
+                    rightChildOfNode.parent = parentOfNode;
+
+                    // node is left or child of parent?
+                    if(parentOfNode.right == node)
+                        parentOfNode.right = rightChildOfNode;
+                    else
+                        parentOfNode.left = rightChildOfNode;
+                    
+                    return rightChildOfNode;
+                }
+                
+                /*
+                if you do not need to update parent pointer than you can 
+                handle case 1, 2, 3 just by using this 4 lines:
+                
                 if(node.left == null)
                     return node.right;
                 
                 if(node.right == null)
                     return node.left;
+                */
                 
-                // case 4
+                // case 4: have both children
                 // replacing node value with the minimum value in right subtree
                 node.val = getMin(node.right).val;
                 // removing duplicate value from right subtree
@@ -165,7 +233,6 @@ namespace adt
 
         protected Node findValR(Node node, int val)
         {
-            // TODO: optimize. add binary search
             if(node == null) return null;
 
             // value found
@@ -183,7 +250,6 @@ namespace adt
 
         protected bool valExistsR(Node node, int val)
         {
-            // TODO: optimize. add binary search
             if(node == null) return false;
 
             // node found
@@ -402,6 +468,12 @@ namespace adt
             else insertI(val); // iterative
         }
 
+        public void delete(int val)
+        {
+            if(!useIterative) root = deleteR(getRoot(), val);
+            else deleteI(val);
+        }
+
 
 #region dislay orders: InOrder, PreOrder, PostOrder, LevelOrder
     // In order --------------
@@ -459,47 +531,63 @@ namespace adt
 
 #endregion
 
+#region utilities: getParent, getMin, getMax
+// get parent
         private Node getParent(Node node)
         {
             if(!useIterative) return getParentR(getRoot(), node);   // recursive
             else return getParentI(node); // iterative 
         }
-
+// get min
         public int getMin()
         {
             Node temp = getMin(getRoot());
             return temp != null ? temp.val : -1;
         }
-
-        public int getMax()
-        {
-            Node temp = getMax(getRoot());
-            return temp != null ? temp.val : -1;
-        }
-
         protected override Node getMin(Node node)
         {
             if(!useIterative) return getMinR(node); // recursive
             else return getMinI(node); // iterative
         }
+// get max
+        public int getMax()
+        {
+            Node temp = getMax(getRoot());
+            return temp != null ? temp.val : -1;
+        }        
         protected override Node getMax(Node node)
         {
             if(!useIterative) return getMaxR(node); // recursive
             else return getMaxI(node); // iterative
         }
 
+#endregion
         
-        public void delete(int val)
-        {
-            if(!useIterative) root = deleteR(getRoot(), val);
-        }
 
         protected void deleteI(int val)
         {
 
         }
 
-       
+       public void testParent()
+       {
+           Console.WriteLine("=== test parent ===");
+           testParent(getRoot());
+           Console.WriteLine();
+       }
+
+       private void testParent(Node node)
+       {
+            if(node == null) return;
+
+            testParent(node.left);
+            testParent(node.right);
+            Node p = node.parent;
+            if(p != null)
+                Console.Write("{0}<-[{1}] ", node.val, p.val);
+            else
+                Console.Write("{0}<-[null] ", node.val);
+       }
 
     }   
 }
