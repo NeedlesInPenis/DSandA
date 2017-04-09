@@ -56,6 +56,7 @@ namespace adt
             Node temp = null;
             if(val < node.val) 
             {
+                // going left
                 temp = insertR(node.left, val);
                 node.left = temp;
                 temp.parent = node;
@@ -63,12 +64,14 @@ namespace adt
                 
             else if( val > node.val)
             {
+                // going right
                 temp  = insertR(node.right, val);
                 node.right = temp;
                 temp.parent = node;
             }
             else
             {
+                // avoiding duplicates
                 Console.WriteLine("[ERROR] insertR(Node,int): {0} already exists", val);
             }
 
@@ -92,6 +95,25 @@ namespace adt
             {
                 // node found. deleting it
 
+                /*
+                Notes: below code be little hard to understand
+                simple version of case 1, 2, 3 deletion:
+                case 1:
+                if(node.left == null && node.right == null)
+                    node = null;
+                    return node;
+                
+                case 2:
+                if(node.left != null && node.right == null)
+                    node = node.left;
+                    return node;
+                
+                case 3:
+                if(node.right != null && node.left == null)
+                    node = node.right;
+                    return node;
+                 */
+
                 //case 1, 2 and 3 
                 if(node.left == null)
                     return node.right;
@@ -112,6 +134,7 @@ namespace adt
 
         protected void InOrderR(Node node)
         {
+            // left - root - right
             if(node == null ) return;
 
             InOrderR(node.left);
@@ -121,6 +144,7 @@ namespace adt
 
         protected void PreOrderR(Node node)
         {
+            // root - left - right
             if(node == null) return;
 
             Console.Write("{0} ", node.val);
@@ -131,7 +155,8 @@ namespace adt
         protected void PostOrderR(Node node)
         {
             if(node == null) return;
-
+            
+            // left - right - root;
             
             PostOrderR(node.left);
             PostOrderR(node.right);
@@ -140,13 +165,17 @@ namespace adt
 
         protected Node findValR(Node node, int val)
         {
+            // TODO: optimize. add binary search
             if(node == null) return null;
 
+            // value found
             if(node.val == val)
                 return node;
             
-            Node temp = findValR(node.left, val);
-            if(temp == null)
+            Node temp = null;
+            if(val < node.val)
+                temp = findValR(node.left, val);
+            else
                 temp = findValR(node.right, val);
 
             return temp;
@@ -154,14 +183,18 @@ namespace adt
 
         protected bool valExistsR(Node node, int val)
         {
+            // TODO: optimize. add binary search
             if(node == null) return false;
 
-            // using pre-order traversal
+            // node found
             if(node.val == val)
                 return true;
             
-            bool temp = valExistsR(node.left, val);
-            if(temp == false)
+            // using pre-order traversal
+            bool temp = false;
+            if(val < node.val)
+                temp = valExistsR(node.left, val);
+            else
                  temp = valExistsR(node.right, val);
 
             return temp;
@@ -413,14 +446,10 @@ namespace adt
     // Finval ------    
         private Node findVal(int val)
         {
-            // iterative 
-            return findValI(val);
-
-            // recursive
-            // return findValR(val);
+            if(!useIterative) return findValR(getRoot(), val); // recursive
+            else return findValI(val); // iterative
         }        
 
-        
     // valExists -------
         public bool valExists(int val)
         {
