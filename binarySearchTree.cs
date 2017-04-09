@@ -25,6 +25,8 @@ namespace adt
         */
         void insert(int val);
 
+        void delete(int val);
+
         void InOrder();
         void PreOrder();
         void PostOrder();
@@ -42,6 +44,8 @@ namespace adt
 
         public bool useIterative = false;
     }
+
+    // contains recursive functions
     class recursiveFunctions : baseForBst
     {
         protected Node insertR(Node node, int val)
@@ -78,7 +82,7 @@ namespace adt
             return node;
         }
 
-         protected Node deleteR(Node node, int val)
+        protected Node deleteR(Node node, int val)
         {
             if(node == null) return null;
             /*
@@ -107,16 +111,17 @@ namespace adt
                 {
                     // if root node
                     if(node.parent == null)
-                    {
-                        
+                    {   
                         node = node.left;
                         node.parent = null;
                         return node;
                     }
 
                     /*
+                    // parent of left child points to parent of node
                     node.left.parent = node.parent;
                     
+                    // node is left or right child of its parent? 
                     if(node.parent.left == node) 
                         node.parent.left = node.left;
                     else 
@@ -154,10 +159,13 @@ namespace adt
                     }
 
                     /*
+                    // same as case 2 but on right side
                     node.right.parent = node.parent
 
-                    if(node.parent.right == node) node.parent.right = node.right;
-                    else node.parent.left = node.left;
+                    if(node.parent.right == node) 
+                        node.parent.right = node.right;
+                    else 
+                        node.parent.left = node.right;
 
                     return node.right;
 
@@ -169,7 +177,7 @@ namespace adt
 
                     rightChildOfNode.parent = parentOfNode;
 
-                    // node is left or child of parent?
+                    // node is left or right child of parent?
                     if(parentOfNode.right == node)
                         parentOfNode.right = rightChildOfNode;
                     else
@@ -179,7 +187,7 @@ namespace adt
                 }
                 
                 /*
-                if you do not need to update parent pointer than you can 
+                if you do not have to play with "parent" pointer than you can
                 handle case 1, 2, 3 just by using this 4 lines:
                 
                 if(node.left == null)
@@ -354,6 +362,179 @@ namespace adt
 
         }
 
+        protected void deleteI(int val)
+        {
+            /*
+            case 1: no child
+            case 2: only have left child
+            case 3: only have right child;
+            case 4: have both children;
+             */
+
+            Node curr = getRoot();
+
+            // find node that need to be deleted
+            while(curr != null)
+            {
+                if(curr.val == val) break; // found node;
+
+                if(val < curr.val) curr = curr.left;
+                else curr = curr.right;
+            }
+
+            if(curr == null) return;  // node not found or tree is empty
+
+            // curr is the node that needs to be deleted
+
+            /*
+            Notes: Parent pointers
+
+            This code deals with nodes who have parent pointers in 
+            their Node Structure.
+
+            For the case where you don't have parent pointers in 
+            your Node structure than there are 3 options:
+
+            a. add parent pointer (you have to change insert/add function too)
+
+            b. use a util function to get parent node. I already 
+            provided (check getParent(Node node)). There might be minor performance loss.
+
+            c. check other version of this function (deleteI2(int val)) which keeps
+            track of the parent pointer and does not rely on any util functions.
+            
+            */
+
+            // case 1: "look Mom no child!"
+            if(curr.left == null && curr.right == null)
+            {
+                // dealing with root node;
+                if(curr.parent == null)
+                {
+                    root = null;
+                    return;
+                }
+
+                // if not root node
+                // curr is left or right child of its parent? 
+                if(curr.parent.left == curr) curr.parent.left = null;
+                else curr.parent.right = null;
+                return;
+            }
+            
+            // case 2: only have left child
+            if(curr.left != null && curr.right == null)
+            {
+                Console.WriteLine("deleting left child [{0}]", curr.val);
+                if(curr.parent == null) // root node
+                {
+                    curr = curr.left;
+                    curr.parent = null;
+                    return;
+                }
+
+            /*
+                what we going to do here now is this:
+
+                // setting parent of left child to parent of curr node
+                curr.left.parent = curr.parent;
+
+                if(curr.parent.left == curr)
+                    curr.parent.left = curr.left;
+                else 
+                    curr.parent.right = curr.right;
+                
+                return;
+
+                Below I wrote a simple version of this code
+            */
+
+                Node parentOfCurr = curr.parent;
+                Node leftChildOfCurr = curr.left;
+
+                leftChildOfCurr.parent = parentOfCurr;
+
+                // curr is left or right child of its parent? 
+                if(parentOfCurr.left == curr)
+                    parentOfCurr.left = leftChildOfCurr;
+                else 
+                    parentOfCurr.right = leftChildOfCurr;
+
+                return;
+            }
+
+            // case 3: only have right child
+            if(curr.right != null && curr.left == null)
+            {
+                Console.WriteLine("deleting right child [{0}]", curr.val);
+                if(curr.parent == null) // root node
+                {
+                    curr = curr.right;
+                    curr.parent = null;
+                    return;
+                }
+
+                /*
+                similar to case 2
+
+                // setting parent of rigth child to parent of curr node
+                curr.right.parent = curr.parent;
+
+                // curr is left or right of its parent? 
+                // connecting child and parent of curr
+                if(curr.parent.left == curr)
+                    curr.parent.left = curr.right;
+                else 
+                    curr.parent.right = curr.right;
+                
+                return;
+
+                simple version below
+                */
+
+                Node parentOfCurr = curr.parent;
+                Node rightChildOfCurr = curr.right;
+
+                rightChildOfCurr.parent = parentOfCurr;
+
+                // curr is left or right child of its parent? 
+                if(parentOfCurr.left == curr)
+                    parentOfCurr.left = rightChildOfCurr;
+                else 
+                    parentOfCurr.right = rightChildOfCurr;
+
+                return;
+            }
+
+            // case 4: node with 2 children
+            // find max value in left subtree of current
+            Node maxInLeft = getMaxI(curr.left); // using iterative version of getMax(Node)
+
+            // if this happen, I will be very sad.
+            if(maxInLeft == null)
+            {
+                Console.WriteLine("[ULTRA BAD ERROR] deleteI(int): maxInLeft is null!!!! ABORT!!1!");
+                return;
+            }
+
+            // replace curr val with max val found in left subtree of curr
+            curr.val = maxInLeft.val;
+
+            // now delete the duplicate in left subtree of curr (maxInLeft)
+
+            // removing maxInLeft;
+            // maxInLeft is right or left child of its parent?
+            if(maxInLeft.parent.left == maxInLeft) 
+                    maxInLeft.parent.left = null;
+            else maxInLeft.parent.right = null;
+            
+            // if somehow maxInLeft's parent is null than
+            // we have huge problem to deal with.
+            // although it should never happen... lets hope.
+
+            return;
+        }
+
         protected void InOrderI()
         {
             // this require Stack data structure
@@ -459,6 +640,8 @@ namespace adt
         }
         
     }
+
+    // main class
     class BinarySearchTree : iterativeFunctions, IBinarySearchTree
     {
 
@@ -470,6 +653,7 @@ namespace adt
 
         public void delete(int val)
         {
+
             if(!useIterative) root = deleteR(getRoot(), val);
             else deleteI(val);
         }
@@ -563,11 +747,11 @@ namespace adt
 
 #endregion
         
-
-        protected void deleteI(int val)
-        {
-
-        }
+       protected void deleteI2(int val)
+       {
+           //TODO: complete this function
+           Console.WriteLine("[ERROR] deleteI2(int): sorry, this function is under construction");
+       }
 
        public void testParent()
        {
