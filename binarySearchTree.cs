@@ -14,11 +14,10 @@ namespace adt
     interface IBinarySearchTree
     {
         /* features
-        deletion
-        isBst
         height
         successor
-        predecessor 
+        predecessor
+        isBst 
         isBalanced
         Level order print
         
@@ -307,6 +306,20 @@ namespace adt
             return getMaxR(node.right);
         }
 
+        protected int getHeightR(Node node)
+        {
+            if (node == null) return 0; 
+
+            int Lheight = getHeightR(node.left); // get height of left subtree
+            int Rheight = getHeightR(node.right); // get height of right subtree
+
+            // return the largest 
+            if(Lheight > Rheight)
+                return Lheight + 1; // adding one to include root level
+            else
+                return Rheight + 1;
+        }
+
     }
 
     class iterativeFunctions: recursiveFunctions
@@ -365,6 +378,26 @@ namespace adt
         protected void deleteI(int val)
         {
             /*
+            Notes: Parent pointers
+
+            This function deals with nodes who have parent pointers in 
+            their Node Structure.
+
+            For the case where you don't have parent pointers in 
+            your Node structure than you have 3 options:
+
+            1. add parent pointer (you have to change insert/add function too)
+
+            2. use a util function to get parent node. I already 
+            provided one (check getParent(Node node)). There might be minor performance loss.
+
+            3. check other version of this function (deleteI2(int val)) which keeps
+            track of the parent and does not rely on any util functions.
+            
+            */
+
+            /*
+            Node deletion cases:
             case 1: no child
             case 2: only have left child
             case 3: only have right child;
@@ -382,28 +415,11 @@ namespace adt
                 else curr = curr.right;
             }
 
-            if(curr == null) return;  // node not found or tree is empty
+            if(curr == null) return;  // node not found
 
             // curr is the node that needs to be deleted
 
-            /*
-            Notes: Parent pointers
-
-            This code deals with nodes who have parent pointers in 
-            their Node Structure.
-
-            For the case where you don't have parent pointers in 
-            your Node structure than there are 3 options:
-
-            a. add parent pointer (you have to change insert/add function too)
-
-            b. use a util function to get parent node. I already 
-            provided (check getParent(Node node)). There might be minor performance loss.
-
-            c. check other version of this function (deleteI2(int val)) which keeps
-            track of the parent pointer and does not rely on any util functions.
             
-            */
 
             // case 1: "look Mom no child!"
             if(curr.left == null && curr.right == null)
@@ -535,6 +551,123 @@ namespace adt
             return;
         }
 
+        protected void deleteI2(int val)
+        {
+            /*
+            Notes:
+            lines which have "// dont need this line" comment is 
+            only added because I am using Node structure which have parent pointer
+            you do not really need that line if you don't have such Node structure
+             */
+
+            Node curr = getRoot();
+            Node parent = null;
+
+            // find node that contains the val
+            while(curr != null)
+            {
+                if(val == curr.val) break; // node found
+
+                parent = curr;
+
+                if(val < curr.val) curr = curr.left;
+                else curr = curr.right;
+
+            }
+
+            if(curr == null) return; // val not found 
+
+            // deletion happens now
+            // curr is the node to be deleted
+            // parent is the parent of curr
+
+            // case 1: no child
+            if(curr.left == null && curr.right == null)
+            {
+                if(parent == null) // root node;
+                {
+                    root = null;
+                    return;
+                }                
+
+                // curr is left or right child of its parent? 
+                if(parent.left == curr)
+                    parent.left = null;
+                else
+                    parent.right = null;
+                
+                return;
+            }            
+
+            // case 2: only have left child
+            if(curr.left != null && curr.right == null)
+            {
+                if(parent == null) //handling root
+                {
+                    root = curr.left;
+
+                    root.parent = null; // don't need this line
+                    return;
+                }                
+
+                curr.left.parent = parent; // don't need this line
+
+                // replace curr with its child
+                if(parent.left == curr)
+                    parent.left = curr.left;
+                else 
+                    parent.right = curr.left;
+                
+                return;
+            }
+
+            // case 3: only have right child
+            if(curr.left == null && curr.right != null)
+            {
+                if(parent == null) //handling root
+                {
+                    root = curr.right;
+                    return;
+                }
+
+                curr.right.parent = parent; // don't need this line
+
+                if(parent.left == curr)
+                    parent.left = curr.right;
+                else 
+                    parent.right = curr.right;
+                
+                return;
+            }
+
+            // case 4: have 2 children
+            
+            // finding max val in curr's left tree
+            Node maxNode = curr.left;
+            Node maxNodeParent = curr;
+
+            while(maxNode.right != null)
+            {
+                maxNodeParent = maxNode;
+                maxNode = maxNode.right;
+            }
+
+            // maxNode contains the largest value
+            // in left subtree of curr
+            // maxNode parent is parent of maxNode
+
+            // replace value of curr with maxNode
+            curr.val = maxNode.val;
+
+            // remove maxNode
+            if(maxNodeParent.left == maxNode)
+                maxNodeParent.left = null;
+            else
+                maxNodeParent.right = null;
+            
+            return;
+        }
+
         protected void InOrderI()
         {
             // this require Stack data structure
@@ -639,6 +772,45 @@ namespace adt
             return curr;
         }
         
+        protected int getHeightI(Node node)
+        {
+            if(node == null) return -1;
+
+            cQueue q = new cQueue();
+            int height = 0;
+
+            // adding nodes in level order
+            q.enqueue(node);
+            q.enqueue(null); // adding null as marker
+
+            while(!q.isEmpty())
+            {
+                Node n = (Node)q.dequeue();
+
+                if(n == null)
+                {
+                    // reached end of the current Level
+
+                    // add null if there are more levels
+                    if(!q.isEmpty()) 
+                        q.enqueue(null);
+                    
+                    height++;
+                }
+                else
+                {
+                    // if not null than add the 
+                    // children of extracted node
+
+                    if(n.left != null)
+                        q.enqueue(n.left);
+                    if(n.right != null)
+                        q.enqueue(n.right);
+                }
+            } // while()
+
+            return height;
+        }
     }
 
     // main class
@@ -655,7 +827,7 @@ namespace adt
         {
 
             if(!useIterative) root = deleteR(getRoot(), val);
-            else deleteI(val);
+            else deleteI2(val);
         }
 
 
@@ -747,21 +919,21 @@ namespace adt
 
 #endregion
         
-       protected void deleteI2(int val)
-       {
-           //TODO: complete this function
-           Console.WriteLine("[ERROR] deleteI2(int): sorry, this function is under construction");
-       }
+        public int getHeight()
+        {
+            if(!useIterative) return getHeightR(getRoot());
+            else return getHeightI(getRoot());
+        }
 
-       public void testParent()
-       {
-           Console.WriteLine("=== test parent ===");
-           testParent(getRoot());
-           Console.WriteLine();
-       }
+        public void testParent()
+        {
+            Console.WriteLine("=== test parent ===");
+            testParent(getRoot());
+            Console.WriteLine();
+        }
 
-       private void testParent(Node node)
-       {
+        private void testParent(Node node)
+        {
             if(node == null) return;
 
             testParent(node.left);
@@ -771,7 +943,7 @@ namespace adt
                 Console.Write("{0}<-[{1}] ", node.val, p.val);
             else
                 Console.Write("{0}<-[null] ", node.val);
-       }
+        }
 
     }   
 }
