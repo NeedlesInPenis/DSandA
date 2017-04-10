@@ -14,13 +14,11 @@ namespace adt
     interface IBinarySearchTree
     {
         /* features
-        height
-        successor
         predecessor
         isBst 
         isBalanced
         Level order print
-        
+        all order iteratives
         */
         void insert(int val);
 
@@ -318,6 +316,38 @@ namespace adt
                 return Lheight + 1; // adding one to include root level
             else
                 return Rheight + 1;
+        }
+
+        protected Node successorR(Node node, int val, Node parent)
+        {
+            // case 1: node is null, return null
+            if(node == null) return null;
+
+            // case 2: node.val == val
+            if(node.val == val)
+            {
+                // case 2.1: node have left child, 
+                // left most in right subtree of node is
+                // successor
+                if(node.right != null)
+                    return getMinR(node.right);
+                // case 2.2: no right child, parent is successor
+                else
+                    return parent;
+            }
+
+            // case 3: node.val != val, find the target node than
+            // look for its successor 
+            else
+            {
+                // case 3.1: search in left side of the tree. if found return left
+                Node left = successorR(node.left, val, node); // passing node as parent
+                
+                if(left != null) return left;
+                
+                // case 3.2: search in right and return 
+                return successorR(node.right, val, parent); // not passing node as parent
+            }
         }
 
     }
@@ -811,6 +841,64 @@ namespace adt
 
             return height;
         }
+
+        protected Node successorI(int val)
+        {
+            /* Notes:
+             this function use parent node
+             check successorI2 where it don't  
+             use parent node
+            */
+            
+            Node curr = findValI(val);
+            if(curr == null) return null;
+
+            if(curr.right != null)
+                return getMinI(curr.right);
+            
+            Node p = curr.parent;
+
+            // going through the ancestors of curr
+            // to find the node for in order successor
+            while(p != null && p.right == curr)
+            {
+                curr = p;
+                p = p.parent; 
+            }
+
+            return p;
+        }
+
+        protected Node successorI2(int val)
+        {
+            /*
+            Notes:
+            This function does not rely on parent pointer
+             */
+
+            Node node = findValI(val); // find the node
+            if(node == null) return null;
+
+            if(node.right != null)
+                return getMinI(node.right);
+            
+            Node suc = null;
+            Node curr = getRoot();
+
+            while( curr != node)
+            {
+                if( node.val < curr.val)
+                {
+                    suc = curr;
+                    curr = curr.left;
+                }
+                else
+                {
+                    curr = curr.right;
+                }
+            }
+            return suc;
+        }
     }
 
     // main class
@@ -925,6 +1013,15 @@ namespace adt
             else return getHeightI(getRoot());
         }
 
+        public Node successor(int val)
+        {
+            // I prefer using iterator version over recursive 
+            // for this particular problem
+            return successorI(val);
+        }
+
+        
+        
         public void testParent()
         {
             Console.WriteLine("=== test parent ===");
@@ -943,6 +1040,26 @@ namespace adt
                 Console.Write("{0}<-[{1}] ", node.val, p.val);
             else
                 Console.Write("{0}<-[null] ", node.val);
+        }
+
+        public void testSuccessor()
+        {
+            Console.WriteLine("=== test successor ===");
+            testSuccessor(getRoot());
+            Console.WriteLine();
+        }
+
+        private void testSuccessor(Node node)
+        {
+            if(node == null) return;
+
+            testSuccessor(node.left);
+            Node temp = successor(node.val);
+            if(temp != null)
+                Console.Write("{0}<[{1}] ", node.val, temp.val);
+            else
+                Console.Write("{0}<[null] ", node.val);
+            testSuccessor(node.right);
         }
 
     }   
