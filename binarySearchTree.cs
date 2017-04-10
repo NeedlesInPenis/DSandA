@@ -14,8 +14,6 @@ namespace adt
     interface IBinarySearchTree
     {
         /* features
-        predecessor
-        isBst 
         isBalanced
         Level order print
         all order iteratives
@@ -27,6 +25,8 @@ namespace adt
         void InOrder();
         void PreOrder();
         void PostOrder();
+
+        bool isBst();
 
     }
 
@@ -370,6 +370,15 @@ namespace adt
 
         }
 
+        protected bool isBstR(Node node, int min, int max)
+        {
+            if(node == null ) return true;
+
+            if(node.val < min || node.val > max) return false;
+
+            return (isBstR(node.left, min, node.val - 1) &&
+                    isBstR(node.right, node.val + 1, max));
+        }
     }
 
     class iterativeFunctions: recursiveFunctions
@@ -721,6 +730,29 @@ namespace adt
         protected void InOrderI()
         {
             // this require Stack data structure
+            cStack stack = new cStack();
+            Node curr = getRoot();            
+            while(1 == 1)
+            {
+                if(curr!=null)
+                {
+                    stack.push(curr);
+                    curr = curr.left;
+                }
+                else
+                {
+                    if(stack.isEmpty()) return;
+                    else
+                    {
+                        curr = (Node)stack.pop();
+                        
+                        Console.Write("{0} ", curr.val);
+                        
+                        curr = curr.right;
+                    }
+                } // curr!=null end
+
+            } // while end
         }
 
         protected void PreOrderI()
@@ -967,6 +999,39 @@ namespace adt
             return pre;
 
         }
+
+        protected bool isBstI()
+        {
+            Node curr = getRoot();
+            if(curr == null) return false;
+
+            if(curr.right == null && curr.left == null) return true;
+
+            Node last = null;
+
+            cStack s = new cStack();
+
+            while(!s.isEmpty() && curr != null)
+            {
+                if( curr != null)
+                {
+                    s.push(curr);
+                    curr = curr.left;
+                }
+                else
+                {
+                    curr = (Node)s.pop();
+
+                    if(last != null && curr.val < last.val) return false;
+
+                    last = curr;
+                    curr = curr.right;
+                }
+
+
+            } // while end
+            return true;
+        }
     }
 
     // main class
@@ -993,7 +1058,7 @@ namespace adt
         {
             // using recursive version
             Console.WriteLine("=== Inorder ===");
-            InOrderR(getRoot());
+            InOrderI();
             Console.WriteLine();
         }      
 
@@ -1095,6 +1160,13 @@ namespace adt
             // return predecessorR(getRoot(), val, null);
         }
 
+        public bool isBst()
+        {
+            if(!useIterative) return isBstR(getRoot(), 0, Int32.MaxValue);
+            else return isBstI();
+        }
+
+        
         public void testParent()
         {
             Console.WriteLine("=== test parent ===");
