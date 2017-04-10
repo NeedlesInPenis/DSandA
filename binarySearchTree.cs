@@ -350,6 +350,26 @@ namespace adt
             }
         }
 
+        protected Node predecessorR(Node node, int val, Node pre)
+        {
+            if(node == null) return null;
+
+            if(node.val == val)
+            {
+                if(node.left != null)
+                    return getMaxR(node.left);
+                else
+                    return pre;
+            }
+            else 
+            {
+                Node right = predecessorR(node.right, val, node);
+                if(right != null) return right;
+                return predecessorR(node.left, val, pre);
+            }
+
+        }
+
     }
 
     class iterativeFunctions: recursiveFunctions
@@ -899,6 +919,54 @@ namespace adt
             }
             return suc;
         }
+
+        protected Node predecessorI(int val)
+        {
+            // this function use parent node
+            // in case you don't have parent node
+            // check other version of this function
+            // predecessorI2(int val);
+
+            Node curr = findValI(val);
+            if(curr == null) return null;
+            if(curr.left != null)
+                return getMaxI(curr.left);
+            
+            Node p = curr.parent;
+            while(p != null && curr == p.left)
+            {
+                curr = p;
+                p = p.parent;
+
+            }
+
+            return p;
+        }
+
+        protected Node predecessorI2(int val)
+        {
+            Node node =  findValI(val);
+            if(node == null) return null;
+            if(node.left != null)
+                return getMaxI(node.left);
+            
+            Node pre = null;
+            Node curr = getRoot();
+
+            while(curr != null)
+            {
+                if(node.val > curr.val)
+                {
+                    pre = curr;
+                    curr = curr.right;
+                }
+                else if( node.val < curr.val)
+                    curr = curr.left;
+                else break;
+            }
+            return pre;
+
+        }
     }
 
     // main class
@@ -1020,8 +1088,13 @@ namespace adt
             return successorI(val);
         }
 
-        
-        
+        public Node predecessor(int val)
+        {
+            // prefer using iterative over recursive for this function
+            return predecessorI(val);
+            // return predecessorR(getRoot(), val, null);
+        }
+
         public void testParent()
         {
             Console.WriteLine("=== test parent ===");
@@ -1042,24 +1115,24 @@ namespace adt
                 Console.Write("{0}<-[null] ", node.val);
         }
 
-        public void testSuccessor()
+        public void testPre()
         {
             Console.WriteLine("=== test successor ===");
-            testSuccessor(getRoot());
+            testPre(getRoot());
             Console.WriteLine();
         }
 
-        private void testSuccessor(Node node)
+        private void testPre(Node node)
         {
             if(node == null) return;
 
-            testSuccessor(node.left);
-            Node temp = successor(node.val);
+            testPre(node.left);
+            Node temp = predecessor(node.val);
             if(temp != null)
-                Console.Write("{0}<[{1}] ", node.val, temp.val);
+                Console.Write("{0}>[{1}] ", node.val, temp.val);
             else
-                Console.Write("{0}<[null] ", node.val);
-            testSuccessor(node.right);
+                Console.Write("{0}>[null] ", node.val);
+            testPre(node.right);
         }
 
     }   
