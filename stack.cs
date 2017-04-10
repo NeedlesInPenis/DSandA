@@ -17,6 +17,7 @@ Basic implementation of stack using linked list
          void push(object data); // O(1)
          object pop();           // O(1)
 
+         object peek();          // 0(1)
          void print();           // O(n)
      }
 
@@ -65,6 +66,12 @@ Basic implementation of stack using linked list
              return o;
          }
 
+         // return top object without popping it
+         public object peek() 
+         {
+             if(isEmpty()) return null;
+             return head.data;
+         }
          public void print()
          {
              Node curr = head;
