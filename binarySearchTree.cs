@@ -729,7 +729,12 @@ namespace adt
 
         protected void InOrderI()
         {
-            // this require Stack data structure
+            /*
+             this require Stack data structure. If you don't
+             want to use stack you can check InOrderI2() which
+             uses Morris tree traversal algorithm
+             */
+        
             cStack stack = new cStack();
             Node curr = getRoot();            
             while(1 == 1)
@@ -753,6 +758,49 @@ namespace adt
                 } // curr!=null end
 
             } // while end
+        }
+
+        protected void InOrderI2()
+        {
+            // using Morris tree traversal algorithm
+            
+            //curr and predecessor
+            Node curr, pre;
+            curr = getRoot();
+
+            while(curr != null)
+            {
+                if(curr.left == null)
+                {
+                    Console.Write("{0} ", curr.data);
+                    curr = curr.right;
+                }
+                else
+                {
+                    pre = curr.left;
+
+                    // find max in left subtree of current 
+                    while(pre.right != null && pre.right != curr)
+                        pre = pre.right;
+                    
+                    // make curr as right child of its
+                    // inorder predecessor
+                    if(pre.right == null)
+                    {
+                        pre.right = curr;
+                        curr = curr.left;
+                    }
+                    else
+                    {
+                        //restoring the tree
+
+                        pre.right = null;
+                        Console.Write("{0} ", curr.data);
+                        curr = curr.right;
+                    }
+                }
+            } // while(curr!=null)
+            
         }
 
         protected void PreOrderI()
@@ -1109,13 +1157,13 @@ namespace adt
 #endregion
 
 #region utilities: getParent, getMin, getMax
-// get parent
+ // get parent
         private Node getParent(Node node)
         {
             if(!useIterative) return getParentR(getRoot(), node);   // recursive
             else return getParentI(node); // iterative 
         }
-// get min
+ // get min
         public int getMin()
         {
             Node temp = getMin(getRoot());
@@ -1126,7 +1174,7 @@ namespace adt
             if(!useIterative) return getMinR(node); // recursive
             else return getMinI(node); // iterative
         }
-// get max
+ // get max
         public int getMax()
         {
             Node temp = getMax(getRoot());
@@ -1166,7 +1214,16 @@ namespace adt
             else return isBstI();
         }
 
-        
+        public bool isBalanced()
+        {
+            return isBalancedR(getRoot());
+        }
+
+        public bool isBalancedR(Node node)
+        {
+            return false;
+        }
+
         public void testParent()
         {
             Console.WriteLine("=== test parent ===");
