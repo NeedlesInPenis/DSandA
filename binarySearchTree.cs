@@ -1,4 +1,4 @@
-/* NOT COMPLETED, still working on it
+/*
 08th April 2017. finished on 13th of April 2017
 Basic implementation of Binary Search Tree. 
 Note:
