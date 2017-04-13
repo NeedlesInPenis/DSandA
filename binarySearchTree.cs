@@ -1,9 +1,10 @@
 /* NOT COMPLETED, still working on it
-08th April 2017
+08th April 2017. finished on 13th of April 2017
 Basic implementation of Binary Search Tree. 
 Note:
 =>No duplicate values are allowed in the tree.
 =>For some functions both iterative and recursive versions are provided.
+
 
  */
 
@@ -13,9 +14,6 @@ namespace adt
 {
     interface IBinarySearchTree
     {
-        /* features
-        all order iteratives
-        */
         void insert(int val);
 
         void delete(int val);
@@ -23,8 +21,18 @@ namespace adt
         void InOrder();
         void PreOrder();
         void PostOrder();
+        void LevelOrder();
+        void LevelOrderInLines();
 
         bool isBst();
+        bool isBalanced();
+        bool valExists(int val);
+
+        int getHeight();
+        int getMin();
+        int getMax();
+        int getSuccessor(int val);
+        int getPredecessor(int val);
 
     }
 
@@ -854,7 +862,7 @@ namespace adt
 
                     curr = curr.left;
                 }
-                
+
                 curr = (Node)s.pop();
 
                 if(curr.right != null && (Node)s.peek() == curr.right)
@@ -1214,7 +1222,6 @@ namespace adt
             else deleteI2(val);
         }
 
-
         #region dislay orders: InOrder, PreOrder, PostOrder, LevelOrder
             // In order left root right--------------
                 public void InOrder()
@@ -1316,13 +1323,31 @@ namespace adt
                     else return getHeightI(getRoot());
                 }
          // successor
-                public Node successor(int val)
+                public int getSuccessor(int val)
+                {
+                    Node temp = successorU(val);
+                    if(temp == null)
+                    {
+                        Console.WriteLine("successor(int): successor of {0} not found", val);
+                        return -1;
+                    }
+
+                    return temp.val;
+                }
+                private Node successor(int val)
                 {
                     // I prefer using iterator version over recursive 
                     return successorI(val);
                 }
          // predecessor
-                public Node predecessor(int val)
+                public int getPredecessor(int val)
+                {
+                    Node n = predecessorU(val);
+                    if(n != null) return n.val;
+                    Console.WriteLine("predecessor(int): predecessor of {0} not found", val);
+                    return -1;
+                }
+                private Node predecessor(int val)
                 {
                     // prefer using iterative over recursive for this function
                     return predecessorI(val);
@@ -1342,8 +1367,5 @@ namespace adt
                 }
 
         #endregion
-        
-        
-
     }   
 }
