@@ -763,7 +763,7 @@ namespace adt
         protected void InOrderI2()
         {
             // using Morris tree traversal algorithm
-            
+
             //curr and predecessor
             Node curr, pre;
             curr = getRoot();
