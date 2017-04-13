@@ -379,6 +379,21 @@ namespace adt
             return (isBstR(node.left, min, node.val - 1) &&
                     isBstR(node.right, node.val + 1, max));
         }
+
+        protected bool isBalancedR(Node node)
+        {
+            // null tree is balance tree
+            if(node == null) return true;
+
+            int l = getHeightR(node.left);
+            int r = getHeightR(node.right);
+
+            if( Math.Abs(l - r ) <= 1 &&
+                isBalancedR(node.left) &&
+                isBalancedR(node.right)) return true;
+
+            return false;
+        }
     }
 
     class iterativeFunctions: recursiveFunctions
@@ -1197,7 +1212,6 @@ namespace adt
         public Node successor(int val)
         {
             // I prefer using iterator version over recursive 
-            // for this particular problem
             return successorI(val);
         }
 
@@ -1219,10 +1233,7 @@ namespace adt
             return isBalancedR(getRoot());
         }
 
-        public bool isBalancedR(Node node)
-        {
-            return false;
-        }
+        
 
         public void testParent()
         {
