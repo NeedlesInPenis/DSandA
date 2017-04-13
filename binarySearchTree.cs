@@ -828,6 +828,57 @@ namespace adt
             // requires stack data structure
         }
 
+        protected void LevelOrderI()
+        {
+            // requires Queue data structure
+            Node curr = getRoot();
+            if(curr == null) return;
+
+            cQueue q = new cQueue();
+            q.enqueue(curr);
+
+            while(!q.isEmpty())
+            {
+                curr = (Node)q.dequeue();
+                Console.Write("{0} ", curr.val);
+
+                if(curr.left != null) q.enqueue(curr.left);
+                if(curr.right != null) q.enqueue(curr.right);
+            }
+        }
+
+        protected void LevelOrderInLinesI()
+        {
+            Node curr = getRoot();
+            if(curr == null) return;
+
+            int nCount = 0;
+
+            cQueue q = new cQueue();
+
+            q.enqueue(curr);
+
+            while(1==1)
+            {
+                nCount = q.getSize();
+                if(nCount == 0) break;
+
+                while(nCount > 0)
+                {
+                    curr = (Node)q.dequeue();
+
+                    Console.Write("{0} ", curr.val);
+
+                    if(curr.left != null) q.enqueue(curr.left);
+                    if(curr.right != null) q.enqueue(curr.right);
+
+                    nCount--;
+                }
+
+                Console.WriteLine();
+            }
+        }
+
         protected Node findValI(int val)
         {
             if(getRoot() == null) return null;
@@ -952,7 +1003,7 @@ namespace adt
                     if(n.right != null)
                         q.enqueue(n.right);
                 }
-            } // while()
+            } // while(!q.isEmpty())
 
             return height;
         }
@@ -1040,12 +1091,17 @@ namespace adt
 
         protected Node predecessorI2(int val)
         {
+            /* this function does not rely on parent node */
+
+            // finding node that contains value
             Node node =  findValI(val);
-            if(node == null) return null;
+            if(node == null) return null; // if node not found
+
+            // return max of left subtree
             if(node.left != null)
                 return getMaxI(node.left);
             
-            Node pre = null;
+            Node pre = null; // for saving predecessor
             Node curr = getRoot();
 
             while(curr != null)
@@ -1068,6 +1124,7 @@ namespace adt
             Node curr = getRoot();
             if(curr == null) return false;
 
+            // if only root than it is bst
             if(curr.right == null && curr.left == null) return true;
 
             Node last = null;
@@ -1150,7 +1207,16 @@ namespace adt
         public void LevelOrder()
         {
             // requires queue data structure
-            Console.WriteLine("[ERROR] LevelOrder(): Not implemented");
+            Console.WriteLine("=== Level order traversal ===");
+            LevelOrderI();
+            Console.WriteLine();
+        }
+
+    // Level order in lines -----
+        public void LevelOrderInLines()
+        {
+            Console.WriteLine("=== Level order line by line ===");
+            LevelOrderInLinesI();
         }
 #endregion
 
