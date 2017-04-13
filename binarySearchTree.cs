@@ -14,8 +14,6 @@ namespace adt
     interface IBinarySearchTree
     {
         /* features
-        isBalanced
-        Level order print
         all order iteratives
         */
         void insert(int val);
@@ -821,11 +819,56 @@ namespace adt
         protected void PreOrderI()
         {
             // requires stack data structure
+            Node curr = getRoot();
+            if(curr == null) return;
+
+            cStack s = new cStack();
+            s.push(curr);
+
+            while(!s.isEmpty())
+            {
+                curr = (Node)s.pop();
+                Console.Write("{0} ", curr.val);
+
+                if(curr.left != null) s.push(curr.left);
+                if(curr.right != null) s.push(curr.right);
+            }
         }
 
         protected void PostOrderI()
         {
             // requires stack data structure
+
+            Node curr = getRoot();
+            if(curr == null) return;
+
+            cStack s = new cStack();
+
+            do
+            {
+                while(curr != null)
+                {
+                    if(curr.right != null)
+                        s.push(curr.right);
+                    s.push(curr);
+
+                    curr = curr.left;
+                }
+                
+                curr = (Node)s.pop();
+
+                if(curr.right != null && (Node)s.peek() == curr.right)
+                {
+                    s.pop();
+                    s.push(curr);
+                    curr = curr.right;
+                }
+                else
+                {
+                    Console.Write("{0} ", curr.val);
+                    curr = null;
+                }
+            } while(!s.isEmpty());
         }
 
         protected void LevelOrderI()
@@ -1172,174 +1215,135 @@ namespace adt
         }
 
 
-#region dislay orders: InOrder, PreOrder, PostOrder, LevelOrder
-    // In order --------------
-        public void InOrder()
-        {
-            // using recursive version
-            Console.WriteLine("=== Inorder ===");
-            InOrderI();
-            Console.WriteLine();
-        }      
+        #region dislay orders: InOrder, PreOrder, PostOrder, LevelOrder
+            // In order left root right--------------
+                public void InOrder()
+                {
+                    // using recursive version
+                    Console.WriteLine("=== Inorder ===");
+                    InOrderI();
+                    Console.WriteLine();
+                }      
 
-    // Pre order -------------
-        public void PreOrder()
-        {
-            Console.WriteLine("=== Pre Order ===");
-            // recursive version
-            PreOrderR(getRoot());
-            Console.WriteLine();
-        }
+            // Pre order root left right-------------
+                public void PreOrder()
+                {
+                    Console.WriteLine("=== Pre Order ===");
+                    // recursive version
+                    PreOrderR(getRoot());
+                    Console.WriteLine();
+                }
+                
+
+            // Post order left right root 
+                public void PostOrder()
+                {
+                    Console.WriteLine("=== Post Order ===");
+                    //using recursive
+                    PostOrderR(getRoot());
+                    Console.WriteLine();
+                }
+
+                
+
+            // Level order -----------
+                public void LevelOrder()
+                {
+                    // requires queue data structure
+                    Console.WriteLine("=== Level order traversal ===");
+                    LevelOrderI();
+                    Console.WriteLine();
+                }
+
+            // Level order in lines -----
+                public void LevelOrderInLines()
+                {
+                    Console.WriteLine("=== Level order line by line ===");
+                    LevelOrderInLinesI();
+                }
+        #endregion
+
+        #region searching: findVal, valExists
+            // Finval ------    
+                private Node findVal(int val)
+                {
+                    if(!useIterative) return findValR(getRoot(), val); // recursive
+                    else return findValI(val); // iterative
+                }        
+
+            // valExists -------
+                public bool valExists(int val)
+                {
+                    if(!useIterative) return valExistsR(getRoot(), val);  // recursive version
+                    else return valExistsI(val); // iterative version
+                }
+
+        #endregion
+
+        #region utilities: getParent, getMin, getMax
+         // get parent
+                private Node getParent(Node node)
+                {
+                    if(!useIterative) return getParentR(getRoot(), node);   // recursive
+                    else return getParentI(node); // iterative 
+                }
+         // get min
+                public int getMin()
+                {
+                    Node temp = getMin(getRoot());
+                    return temp != null ? temp.val : -1;
+                }
+                protected override Node getMin(Node node)
+                {
+                    if(!useIterative) return getMinR(node); // recursive
+                    else return getMinI(node); // iterative
+                }
+         // get max
+                public int getMax()
+                {
+                    Node temp = getMax(getRoot());
+                    return temp != null ? temp.val : -1;
+                }        
+                protected override Node getMax(Node node)
+                {
+                    if(!useIterative) return getMaxR(node); // recursive
+                    else return getMaxI(node); // iterative
+                }
+         // get height
+                public int getHeight()
+                {
+                    if(!useIterative) return getHeightR(getRoot());
+                    else return getHeightI(getRoot());
+                }
+         // successor
+                public Node successor(int val)
+                {
+                    // I prefer using iterator version over recursive 
+                    return successorI(val);
+                }
+         // predecessor
+                public Node predecessor(int val)
+                {
+                    // prefer using iterative over recursive for this function
+                    return predecessorI(val);
+                    // return predecessorR(getRoot(), val, null);
+                }
+
+         // is Binary search tree?
+                public bool isBst()
+                {
+                    if(!useIterative) return isBstR(getRoot(), 0, Int32.MaxValue);
+                    else return isBstI();
+                }
+         // is it balanced
+                public bool isBalanced()
+                {
+                    return isBalancedR(getRoot());
+                }
+
+        #endregion
         
-
-    // Post order ------------
-        public void PostOrder()
-        {
-            Console.WriteLine("=== Post Order ===");
-            //using recursive
-            PostOrderR(getRoot());
-            Console.WriteLine();
-        }
-
         
-
-    // Level order -----------
-        public void LevelOrder()
-        {
-            // requires queue data structure
-            Console.WriteLine("=== Level order traversal ===");
-            LevelOrderI();
-            Console.WriteLine();
-        }
-
-    // Level order in lines -----
-        public void LevelOrderInLines()
-        {
-            Console.WriteLine("=== Level order line by line ===");
-            LevelOrderInLinesI();
-        }
-#endregion
-
-#region searching: findVal, valExists
-    // Finval ------    
-        private Node findVal(int val)
-        {
-            if(!useIterative) return findValR(getRoot(), val); // recursive
-            else return findValI(val); // iterative
-        }        
-
-    // valExists -------
-        public bool valExists(int val)
-        {
-            if(!useIterative) return valExistsR(getRoot(), val);  // recursive version
-            else return valExistsI(val); // iterative version
-        }
-
-#endregion
-
-#region utilities: getParent, getMin, getMax
- // get parent
-        private Node getParent(Node node)
-        {
-            if(!useIterative) return getParentR(getRoot(), node);   // recursive
-            else return getParentI(node); // iterative 
-        }
- // get min
-        public int getMin()
-        {
-            Node temp = getMin(getRoot());
-            return temp != null ? temp.val : -1;
-        }
-        protected override Node getMin(Node node)
-        {
-            if(!useIterative) return getMinR(node); // recursive
-            else return getMinI(node); // iterative
-        }
- // get max
-        public int getMax()
-        {
-            Node temp = getMax(getRoot());
-            return temp != null ? temp.val : -1;
-        }        
-        protected override Node getMax(Node node)
-        {
-            if(!useIterative) return getMaxR(node); // recursive
-            else return getMaxI(node); // iterative
-        }
-
-#endregion
-        
-        public int getHeight()
-        {
-            if(!useIterative) return getHeightR(getRoot());
-            else return getHeightI(getRoot());
-        }
-
-        public Node successor(int val)
-        {
-            // I prefer using iterator version over recursive 
-            return successorI(val);
-        }
-
-        public Node predecessor(int val)
-        {
-            // prefer using iterative over recursive for this function
-            return predecessorI(val);
-            // return predecessorR(getRoot(), val, null);
-        }
-
-        public bool isBst()
-        {
-            if(!useIterative) return isBstR(getRoot(), 0, Int32.MaxValue);
-            else return isBstI();
-        }
-
-        public bool isBalanced()
-        {
-            return isBalancedR(getRoot());
-        }
-
-        
-
-        public void testParent()
-        {
-            Console.WriteLine("=== test parent ===");
-            testParent(getRoot());
-            Console.WriteLine();
-        }
-
-        private void testParent(Node node)
-        {
-            if(node == null) return;
-
-            testParent(node.left);
-            testParent(node.right);
-            Node p = node.parent;
-            if(p != null)
-                Console.Write("{0}<-[{1}] ", node.val, p.val);
-            else
-                Console.Write("{0}<-[null] ", node.val);
-        }
-
-        public void testPre()
-        {
-            Console.WriteLine("=== test successor ===");
-            testPre(getRoot());
-            Console.WriteLine();
-        }
-
-        private void testPre(Node node)
-        {
-            if(node == null) return;
-
-            testPre(node.left);
-            Node temp = predecessor(node.val);
-            if(temp != null)
-                Console.Write("{0}>[{1}] ", node.val, temp.val);
-            else
-                Console.Write("{0}>[null] ", node.val);
-            testPre(node.right);
-        }
 
     }   
 }
