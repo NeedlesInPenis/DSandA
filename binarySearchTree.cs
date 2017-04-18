@@ -1325,7 +1325,7 @@ namespace adt
          // successor
                 public int getSuccessor(int val)
                 {
-                    Node temp = successorU(val);
+                    Node temp = successorI(val);
                     if(temp == null)
                     {
                         Console.WriteLine("successor(int): successor of {0} not found", val);
@@ -1342,7 +1342,7 @@ namespace adt
          // predecessor
                 public int getPredecessor(int val)
                 {
-                    Node n = predecessorU(val);
+                    Node n = predecessorI(val);
                     if(n != null) return n.val;
                     Console.WriteLine("predecessor(int): predecessor of {0} not found", val);
                     return -1;
