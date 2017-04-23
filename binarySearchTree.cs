@@ -423,7 +423,7 @@ namespace adt
 
                 if(val < parent.val)
                 {
-                    //going left
+                    // going left
                     curr = curr.left;
 
                     if(curr == null)
@@ -451,7 +451,7 @@ namespace adt
                     return;
                 }
 
-            } //while() END
+            } //while(true) END
 
         }
 
@@ -472,7 +472,7 @@ namespace adt
             provided one (check getParent(Node node)). There might be minor performance loss.
 
             3. check other version of this function (deleteI2(int val)) which keeps
-            track of the parent and does not rely on any util functions.
+            track of the parent and does not rely on any utility functions.
             
             */
 
