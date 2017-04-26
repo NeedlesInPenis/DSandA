@@ -8,7 +8,7 @@ queue       - done
 deque       - done  
 doubly linked list - done  
 Binary search tree - done  
-AVL tree           - TODO  
+AVL tree           - done
 ...  
 more to come  
 
